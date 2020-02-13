@@ -25,5 +25,9 @@ public class Device {
 	
 	@NotNull(message="Porta Obrigatória")
 	private Integer port;
+	
+	@NotNull(message="Descrição Obrigatória")
+	@NotEmpty(message="Descrição Obrigatória")
+	private String description;
 
 }
