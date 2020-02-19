@@ -66,9 +66,10 @@ public class DeviceController {
 		
 		Socket socket = null;
 		Device device = null;
-		Optional<Device> optionalDevice = deviceRepository.findById(commandModel.getDeviceId());
 		OutputStream os = null;
 		BufferedWriter bf = null;
+		
+		Optional<Device> optionalDevice = deviceRepository.findById(commandModel.getDeviceId());
 		
 		if (optionalDevice.isPresent()) device = optionalDevice.get();
 		
