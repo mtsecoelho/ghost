@@ -1,6 +1,9 @@
 package br.com.splnet.ghost.controller;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Optional;
 
@@ -64,6 +67,8 @@ public class DeviceController {
 		Socket socket = null;
 		Device device = null;
 		Optional<Device> optionalDevice = deviceRepository.findById(commandModel.getDeviceId());
+		OutputStream os = null;
+		BufferedWriter bf = null;
 		
 		if (optionalDevice.isPresent()) device = optionalDevice.get();
 		
@@ -71,13 +76,22 @@ public class DeviceController {
 		
 		try {
 			socket = new Socket(device.getIp(), device.getPort());
-			socket.getOutputStream().write(commandModel.getMessage().getBytes());
+			os = socket.getOutputStream();
+			
+			bf = new BufferedWriter(new OutputStreamWriter(os));
+			
+			bf.write("GET /"+ commandModel.getMessage());
+			bf.newLine();
+			bf.write("Accept: */*");
+			bf.newLine();
 		} catch (IOException e) {
 			return new ResponseModel(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Erro ao enviar mensagem: " + e.getMessage(), null);
 		} 
 		finally {
 			if (socket != null)
 				try {
+					bf.close();
+					os.close();
 					socket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
